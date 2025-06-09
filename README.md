@@ -1,4 +1,4 @@
-# LMS Платформа
+# LMS Platform
 
 ---
 
