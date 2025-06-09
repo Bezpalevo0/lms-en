@@ -1,0 +1,13 @@
+---
+import UserLayout from "@/layouts/UserLayout.astro"
+import CourseList from "@/components/CourseList.astro"
+
+const {userCourses} = Astro.locals
+---
+
+<UserLayout>
+    <div class="flex flex-col p-4">
+        <h1 class="text-3xl font-semibold mb-3">Added Courses</h1>
+        <CourseList courses={userCourses} isUserLib={true} addedCourses={userCourses} publicView={false}/>
+    </div>
+</UserLayout>

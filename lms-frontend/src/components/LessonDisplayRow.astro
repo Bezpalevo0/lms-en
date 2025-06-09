@@ -1,0 +1,32 @@
+---
+import {ActionType} from "@/interfaces"
+import {capitalize, statusLabel} from "@/lib/utils"
+import ActionButton from "@/components/ui/ActionButton.astro"
+
+const {course, lesson, isCourseInUserLibrary, lessonProgressStatus} = Astro.props
+---
+
+<div class="flex flex-col md:flex-row justify-between items-center">
+    <div class="w-full p-2 rounded">
+        <h3 class="font-semibold">{lesson.order} {lesson.title}</h3>
+        <p class="text-sm text-gray-500">{lesson.description}</p>
+    </div>
+    {isCourseInUserLibrary &&
+            <div class="flex space-x-4 items-center md:w-40">
+                {lessonProgressStatus ?
+                        <a href={`/u/courses/${course.slug}/${lesson.slug}`}
+                           class={`px-4 py-2 w-full rounded border transition text-center 
+                   ${lessonProgressStatus === 'completed' ? 'text-green-600' : ''}`}
+                        >
+                            {capitalize(statusLabel(lessonProgressStatus))}
+                        </a>
+                    :
+                        <ActionButton label="Start lesson"
+                                      actionType={ActionType.BeginLesson}
+                                      documentId={lesson.documentId}
+                                      redirectPath={`/u/courses/${course.slug}/${lesson.slug}`}
+                        />
+                }
+            </div>
+    }
+</div>

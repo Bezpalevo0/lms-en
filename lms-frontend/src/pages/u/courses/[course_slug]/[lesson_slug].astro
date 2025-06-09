@@ -1,0 +1,130 @@
+---
+import {marked} from 'marked'
+import {ActionType} from '@/interfaces'
+import UserLayout from '@/layouts/UserLayout.astro'
+import ActionButton from "@/components/ui/ActionButton.astro"
+
+const {course_slug, lesson_slug} = Astro.params
+const {userCourses, userProgress} = Astro.locals
+
+const course = userCourses.find(c => c.slug === course_slug)
+if (!course) return new Response(null, {status: 404, statusText: 'Course not found'})
+
+const lesson = course.lessons.find(l => l.slug === lesson_slug)
+if (!lesson) return new Response(null, {status: 404, statusText: 'Lesson not found'})
+
+const courseProgress = userProgress.find(p => p.course.slug === course_slug)
+const lessonProgress = courseProgress?.lessonsProgress.find(lp => lp.lesson.documentId === lesson.documentId)
+if (!lessonProgress) return new Response(null, {status: 404, statusText: 'Lesson progress not found'})
+
+const prevLesson = course.lessons.find(l => l.order === lesson.order - 1)
+const nextLesson = course.lessons.find(l => l.order === lesson.order + 1)
+
+const prevLessonProgress = courseProgress?.lessonsProgress.find(lp => lp.lesson.documentId === prevLesson?.documentId)
+const nextLessonProgress = courseProgress?.lessonsProgress.find(lp => lp.lesson.documentId === nextLesson?.documentId)
+
+const content = lesson.content ? marked.parse(lesson.content) : null
+---
+<UserLayout>
+    <div class="flex flex-col p-4 gap-4">
+        <!-- Breadcrumbs -->
+        <nav class="text-sm text-gray-400">
+            <a href="/u/courses" class="hover:underline text-blue-400">Courses</a>
+            <span class="mx-2">/</span>
+            <a href={`/u/courses/${course.slug}`} class="hover:underline text-blue-400">{course.title}</a>
+            <span class="mx-2">/</span>
+            <span class="text-white">{lesson.order}: {lesson.title}</span>
+        </nav>
+
+        <!-- Lesson Header -->
+        <h1 class="text-xl font-semibold">{lesson.title}</h1>
+        <p class="text-gray-400">{lesson.description}</p>
+
+        {!userCourses.some(c => c.slug === course_slug) ? (
+                <div class="py-16 px-4 flex flex-col justify-center items-center bg-blue-100/10 rounded-2xl">
+                    <p class="text-2xl font-bold mb-8">Add a course to the library to start learning</p>
+                    <ActionButton
+                            label="Добавить курс"
+                            actionType={ActionType.AddCourse}
+                            documentId={course.documentId}
+                            redirectPath={`/u/courses/${course.slug}`}
+                    />
+                </div>
+        ) : (
+                <>
+                    <!-- Lesson Content -->
+                    <div class="prose prose-invert max-w-none mt-6">
+                        <div class="flex flex-wrap space-x-4 space-y-4 my-8">
+                            {lessonProgress?.lesson.media?.map(media => (
+                                    <div class="mx-auto">
+                                        <figure>
+                                            <video controls>
+                                                <source src={media.url} type={media.mime}/>
+                                                Your browser does not support the video tag.
+                                            </video>
+                                            <figcaption>{media.caption}</figcaption>
+                                        </figure>
+                                    </div>
+                            ))}
+                        </div>
+
+                        {content &&
+                                <article set:html={content}/>}
+
+                    </div>
+
+                    <!-- Complete button -->
+                    <div class="w-fit mx-auto">
+
+                        {lessonProgress?.progress_status !== 'completed' ? (
+                                <ActionButton
+                                        label="Complete the lesson"
+                                        actionType={ActionType.CompleteLesson}
+                                        documentId={lesson.documentId}
+                                        redirectPath={`/u/courses/${course.slug}`}
+                                />
+                        ) : (
+                                <p class="p-2 flex items-center justify-center text-green-400">
+                                    You have completed this lesson
+                                    {new Date(lessonProgress.completedAt).toLocaleDateString('en-CA')}
+                                </p>
+                        )}
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="flex justify-between mt-6 items-center space-x-4 w-full">
+                        <div>
+                            {prevLessonProgress ? (
+                                    <a href={`/u/courses/${course.slug}/${prevLesson.slug}`} class="max-w-fit w-full">
+                                        &larr; Previous lesson
+                                    </a>
+                            ) : prevLesson ? (
+                                    <ActionButton
+                                            label="&larr; Start the previous lesson"
+                                            actionType={ActionType.BeginLesson}
+                                            documentId={prevLesson.documentId}
+                                            redirectPath={`/u/courses/${course.slug}/${prevLesson.slug}`}
+                                    />
+                            ) : null}
+                        </div>
+
+                        <div class="ml-auto">
+                            {nextLessonProgress ? (
+                                    <a href={`/u/courses/${course.slug}/${nextLesson.slug}`} class="max-w-fit w-full">
+                                        Next lesson &rarr;
+                                    </a>
+                            ) : nextLesson ? (
+                                    <ActionButton
+                                            label="Start the next lesson &rarr;"
+                                            actionType={ActionType.BeginLesson}
+                                            documentId={nextLesson.documentId}
+                                            redirectPath={`/u/courses/${course.slug}/${nextLesson.slug}`}
+                                    />
+                            ) : null}
+                        </div>
+                    </div>
+
+                </>
+        )}
+    </div>
+</UserLayout>

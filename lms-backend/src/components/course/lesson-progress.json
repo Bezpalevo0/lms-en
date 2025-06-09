@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_course_lesson_progresses",
+  "info": {
+    "displayName": "lessonProgress",
+    "icon": "file",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "lesson": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::lesson.lesson"
+    },
+    "progress_status": {
+      "type": "enumeration",
+      "enum": [
+        "in_progress",
+        "completed"
+      ],
+      "default": "in_progress"
+    },
+    "startedAt": {
+      "type": "datetime",
+      "required": true
+    },
+    "completedAt": {
+      "type": "datetime"
+    }
+  }
+}

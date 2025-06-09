@@ -1,0 +1,18 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro"
+import UserHeader from "@/components/UserHeader.astro"
+
+
+const {title = null} = Astro.props
+---
+
+<BaseLayout title={title}>
+    <UserHeader/>
+    <main class="flex flex-1 flex-col">
+        <slot/>
+    </main>
+    <footer class="flex flex-col p-4 w-fit m-auto">
+        <!--TODO:remove-->
+        <a href="/">Main Page</a>
+    </footer>
+</BaseLayout>

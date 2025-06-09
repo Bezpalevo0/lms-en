@@ -1,0 +1,48 @@
+---
+import type {CourseProgress} from "@/interfaces"
+import {formatProgress, statusLabel, statusClass} from "@/lib/utils"
+import ProgressCircle from '@/components/ui/ProgressCircle.astro'
+
+const {progress} = Astro.props
+
+function getCompletedLessons(progress = []) {
+    return progress.filter(lp => lp.progress_status === 'completed').length
+}
+---
+
+{progress && progress.length > 0 ? (
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {progress.map((course: CourseProgress) => (
+            <a
+                    href={`/u/courses/${course.course.slug}`}
+                    class="p-4 bg-blue-300/10 shadow rounded-lg flex flex-col justify-between"
+            >
+                <div class="flex justify-between items-center text-xs">
+                    <span>Started: {new Date(course.enrolledAt).toLocaleDateString('en-CA')}</span>
+                    <span>
+            {course.progress_status === 'completed'
+                ? `Completed: ${new Date(course.completedAt).toLocaleDateString('en-CA')}`
+                : ''}
+          </span>
+                </div>
+
+                <div class="flex justify-between my-2 space-x-2">
+                    <h3 class="text-lg font-bold">{course.course.title}</h3>
+                    <ProgressCircle
+                            progressPercent={formatProgress(course.course.lessons.length, getCompletedLessons(course.lessonsProgress))}/>
+                </div>
+
+                <div class="flex justify-between items-center text-xs">
+          <span class={`${statusClass(course.progress_status)} py-1 px-2 w-fit rounded-2xl leading-tight`}>
+            {statusLabel(course.progress_status)}
+          </span>
+                    <span>
+            Completed {getCompletedLessons(course.lessonsProgress)} out of {course.course.lessons.length} lessons
+          </span>
+                </div>
+            </a>
+    ))}
+</div>
+    ) : (
+<div class="text-gray-500">No added courses</div>
+    ) }

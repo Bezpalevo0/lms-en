@@ -1,0 +1,50 @@
+---
+import UserLayout from "@/layouts/UserLayout.astro"
+import CourseList from "@/components/CourseList.astro"
+
+const {courses, coursesMeta, userCourses} = Astro.locals
+---
+
+<UserLayout>
+    {coursesMeta.pageCount > 1 &&
+            <div class="container mx-auto flex justify-center space-x-2 items-center font-semibold">
+                {coursesMeta.page > 1 && (
+                        <a href={`?p=${coursesMeta.page - 1}`}
+                           class="p-2 px-3 rounded bg-blue-300/10 hover:bg-blue-300/20">
+                            ← Prev
+                        </a>
+                )}
+
+                {Array.from({length: coursesMeta.pageCount}, (_, i) => i + 1).map((pageNum) => (
+                        <a
+                                href={`?p=${pageNum}`}
+                                class={`p-2 px-3 rounded ${
+                                    pageNum === coursesMeta.page
+                                        ? 'text-gray-300 cursor-default'
+                                        : 'bg-blue-300/10 hover:bg-blue-300/20'
+                                }`}
+                        >
+                            {pageNum}
+                        </a>
+                ))}
+
+                {coursesMeta.page < coursesMeta.pageCount && (
+                        <a href={`?p=${coursesMeta.page + 1}`}
+                           class="p-2 px-3 rounded bg-blue-300/10 hover:bg-blue-300/20">
+                            Next →
+                        </a>
+                )}
+            </div>
+    }
+
+
+    <div class="flex flex-col p-4">
+        <h1 class="text-3xl font-semibold mb-3">All Courses</h1>
+        <CourseList courses={courses}
+                    isUserLib={false}
+                    addedCourses={userCourses}
+                    publicView={false}
+                    page={coursesMeta.page}
+        />
+    </div>
+</UserLayout>

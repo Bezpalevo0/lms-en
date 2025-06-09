@@ -1,0 +1,31 @@
+---
+import {capitalize} from "@/lib/utils"
+import PublicLayout from '@/layouts/PublicLayout.astro'
+import LoginForm from '@/components/auth/LoginForm.astro'
+import RegistrationForm from '@/components/auth/RegistrationForm.astro'
+
+const current = Astro.url.searchParams.get('tab') || 'login'
+const redirectPage = Astro.url.searchParams.get('r') || null
+---
+
+<PublicLayout title={capitalize(current)}>
+    <div class="container mx-auto p-4">
+        <div class="my-16 max-w-md mx-auto p-6 md:p-12 rounded-2xl bg-blue-300/10">
+            <div class="flex justify-center space-x-4 mb-6 font-semibold">
+                <a href=`/auth?tab=login${redirectPage ? '&r=' + redirectPage : ''}`
+                   class={current === 'login' ? 'text-blue-500 border-b-2 border-blue-500' : ''}>
+                    Log In
+                </a>
+                <a href=`/auth?tab=register${redirectPage ? '&r=' + redirectPage : ''}`
+                   class={current === 'register' ? 'text-blue-500 border-b-2 border-blue-500' : ''}>
+                    Sign Up
+                </a>
+            </div>
+
+            {current === 'register' ?
+                    <RegistrationForm redirectPage={redirectPage}/> :
+                    <LoginForm redirectPage={redirectPage}/>
+            }
+        </div>
+    </div>
+</PublicLayout>

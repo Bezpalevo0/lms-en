@@ -1,0 +1,32 @@
+.env
+.env.*
+
+# ОС
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea
+.vscode
+
+# Node
+node_modules
+npm-debug.log
+pnpm-debug.log
+yarn-debug.log
+yarn-error.log
+package-lock.json
+.pnpm-store
+.pnp.*
+.cache
+dist
+build
+coverage
+
+# Docker
+Dockerfile
+docker-compose.yml
+
+# Git
+.git
+.gitignore

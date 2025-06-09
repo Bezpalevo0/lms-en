@@ -1,0 +1,55 @@
+---
+import {type Course, ActionType} from "@/interfaces"
+import ActionButton from "@/components/ui/ActionButton.astro"
+import {formatDate} from "../lib/utils"
+
+const {courses, isUserLib, addedCourses, publicView = true, page = null} = Astro.props
+
+function getTrimmedDescription(desc: string, maxLength = 100): string {
+    return desc?.length > maxLength ? desc.slice(0, maxLength) + '...' : desc
+}
+
+function shouldShowAddButton(courseDocumentId: string): boolean {
+    return !isUserLib.value && !addedCourses?.some((c: Course) => c.documentId === courseDocumentId)
+}
+---
+
+{courses?.length > 0 ? (
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {courses
+        .slice() // create a copy to avoid mutating original array
+        .sort((a: Course, b: Course) => Number(new Date(b.publishedAt)) - Number(new Date(a.publishedAt)))
+        .map((course: Course) => (
+                <div class="p-4 bg-blue-300/10 shadow rounded-lg flex flex-col justify-between">
+                    <div class="mb-2">
+                        <h3 class="text-lg font-bold">{course.title}</h3>
+                        <p class="text-gray-500 text-sm">{course.publishedAt ? formatDate(course.publishedAt) : ''}</p>
+                    </div>
+
+                    <p class="mb-4 text-gray-400">{getTrimmedDescription(course.description)}</p>
+
+                    <div class="flex space-x-2 mt-auto">
+                        {!publicView && shouldShowAddButton(course.documentId) ? (
+                                <ActionButton actionType={ActionType.AddCourse}
+                                              label="Add to library"
+                                              documentId={course.documentId}
+                                              redirectPath={Astro.url.pathname + (page ? `?p=${page}` : '')}
+                                />
+                        ) : !publicView && !isUserLib ? (
+                                <span class="px-4 py-2 text-gray-500">In library</span>
+                        ) : null}
+
+                        <a href={`${publicView ? '' : '/u'}/courses/${course.slug}`}
+                           class={`px-4 py-2 rounded hover:bg-blue-300/10 transition ${isUserLib ? 'bg-blue-600' : ''}`}>
+                            {isUserLib ? 'Continue learning' : 'Details'}
+                        </a>
+                    </div>
+                </div>
+        ))}
+
+</div>
+    ) : (
+<div class="text-gray-500">
+    No {isUserLib ? 'added' : 'available'} courses
+</div>
+    )}

@@ -1,0 +1,34 @@
+---
+import UserLayout from "@/layouts/UserLayout.astro"
+import UserProgress from "@/components/UserProgress.astro"
+import CourseList from "@/components/CourseList.astro"
+
+
+const {courses, userCourses, userProgress} = Astro.locals
+---
+
+<UserLayout title="Home">
+    <div class="flex flex-col p-4">
+        <h2 class="text-3xl font-semibold mb-3">Your Progress</h2>
+        <UserProgress progress={userProgress}/>
+    </div>
+
+    <hr class="my-8 border-blue-300/10"/>
+
+    <div class="flex flex-col p-4">
+        <h2 class="text-3xl font-semibold mb-3">Added Courses</h2>
+        <CourseList courses={userCourses} isUserLib={true} addedCourses={userCourses} publicView={false}/>
+    </div>
+
+    <hr class="my-8 border-blue-300/10"/>
+
+    <div class="flex flex-col p-4">
+        <h2 class="text-3xl font-semibold mb-3">All Courses</h2>
+        <CourseList courses={courses} isUserLib={false} addedCourses={userCourses} publicView={false}/>
+
+        <a href="/u/courses/"
+           class="mt-4 mx-auto w-fit px-4 py-2 rounded hover:bg-blue-600/90 transition bg-blue-600">
+            See All Courses
+        </a>
+    </div>
+</UserLayout>

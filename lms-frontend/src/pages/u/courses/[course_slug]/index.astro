@@ -1,0 +1,69 @@
+---
+import {type Lesson, ActionType} from '@/interfaces'
+import UserLayout from '@/layouts/UserLayout.astro'
+import ActionButton from "@/components/ui/ActionButton.astro"
+import LessonDisplayRow from "@/components/LessonDisplayRow.astro"
+
+const {course_slug} = Astro.params
+const {course, userCourses, userProgress} = Astro.locals
+
+const isCourseInUserLibrary = userCourses.some(c => c.slug === course_slug)
+const courseProgress = userProgress.find(p => p.course.slug === course_slug)
+
+// Pre-sort lessons
+const sortedLessons = [...course?.lessons].sort((a, b) => a.order - b.order)
+
+// Prebuild progress map
+const progressMap = new Map(
+    courseProgress?.lessonsProgress.map(lp => [lp.lesson.documentId, lp.progress_status]) || []
+)
+---
+<UserLayout>
+    <div class="flex flex-col flex-1 justify-between p-4">
+        <div>
+            <!-- Breadcrumbs -->
+            <nav class="text-sm text-gray-400">
+                <a href="/u/courses" class="hover:underline text-blue-400">Courses</a>
+                <span class="mx-2">/</span>
+                <span class="text-white">{course.title}</span>
+            </nav>
+
+            <!-- Title + Description -->
+            <h1 class="text-2xl font-bold">{course.title}</h1>
+            <p class="text-gray-400">{course.description}</p>
+        </div>
+
+        <!-- Lessons -->
+        <div class="flex-1 mt-4 space-y-2">
+            {sortedLessons.map((lesson: Lesson) => (
+                    <hr class="mb-2 border-blue-300/10"/>
+                    <LessonDisplayRow
+                            course={courseProgress?.course}
+                            lesson={lesson}
+                            isCourseInUserLibrary={isCourseInUserLibrary}
+                            lessonProgressStatus={progressMap.get(lesson.documentId)}
+                    />
+                    <hr class="mt-2 border-blue-300/10"/>
+            ))}
+        </div>
+
+        <!-- Add/Remove Button -->
+        <div class="flex w-fit mt-auto mx-auto">
+            {isCourseInUserLibrary ? (
+                    <ActionButton
+                            label="Remove from my library"
+                            actionType={ActionType.RemoveCourse}
+                            documentId={course.documentId}
+                            redirectPath="/u/my"
+                    />
+            ) : (
+                    <ActionButton
+                            label="Add to my library"
+                            actionType={ActionType.AddCourse}
+                            documentId={course.documentId}
+                            redirectPath={`/u/courses/${course.slug}`}
+                    />
+            )}
+        </div>
+    </div>
+</UserLayout>

@@ -1,0 +1,36 @@
+---
+interface Props {
+    progressPercent: number;
+}
+const {progressPercent} = Astro.props
+const circumference = 2 * Math.PI * 16
+const offset = circumference - (progressPercent / 100) * circumference
+---
+
+<div class="relative w-12 h-12">
+    <svg class="w-full h-full rotate-[-90deg]" viewBox="0 0 36 36">
+        <circle
+                class="text-blue-100"
+                stroke="currentColor"
+                stroke-width="2"
+                fill="none"
+                cx="18"
+                cy="18"
+                r="16"
+        />
+        <circle
+                class="text-blue-500"
+                stroke-dasharray={circumference}
+                stroke-dashoffset={offset}
+                stroke="currentColor"
+                stroke-width="4"
+                fill="none"
+                cx="18"
+                cy="18"
+                r="16"
+        />
+    </svg>
+    <div class="absolute inset-0 flex items-center justify-center text-xs font-semibold">
+        {progressPercent}%
+    </div>
+</div>

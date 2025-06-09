@@ -1,0 +1,40 @@
+---
+import type {ActionType} from '@/interfaces'
+
+interface Props {
+    label: string
+    actionType: ActionType
+    documentId: string
+    redirectPath?: string
+}
+
+const {label, actionType, documentId, redirectPath} = Astro.props
+
+// Determine button color based on action type
+const bgColor = {
+    addCourse: 'bg-blue-600 hover:bg-blue-700',
+    removeCourse: 'bg-red-600 hover:bg-red-700',
+    beginLesson: 'bg-blue-600 hover:bg-blue-700',
+    completeLesson: 'bg-green-600 hover:bg-green-700',
+}[actionType] ?? 'bg-blue-600'
+
+// Check for error in query parameters
+const url = new URL(Astro.url)
+const error = url.searchParams.get("error")
+const isThisButton = url.searchParams.get("id") === documentId
+---
+
+<form action="/action" method="POST" class="w-full flex flex-col justify-center items-center">
+    <input type="hidden" name="actionSourcePath" value={url.pathname}/>
+    <input type="hidden" name="actionType" value={actionType}/>
+    <input type="hidden" name="documentId" value={documentId}/>
+    <input type="hidden" name="redirectPath" value={redirectPath}/>
+
+    <!-- Action button -->
+    <button type="submit" class={`w-full px-4 py-2 rounded transition ${bgColor}`}>
+        {label}
+    </button>
+
+    <!-- Display error below the button -->
+    {error && isThisButton && <p class="mt-2 text-xs text-red-700 p-1">{decodeURIComponent(error)}</p>}
+</form>

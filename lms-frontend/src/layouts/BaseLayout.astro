@@ -1,0 +1,16 @@
+---
+import "@/styles/global.css"
+import Head from "@/components/Head.astro"
+
+
+const {title = null} = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+<Head title={title}/>
+<body class="min-h-screen flex flex-col bg-black text-white">
+<slot/>
+</body>
+</html>
+

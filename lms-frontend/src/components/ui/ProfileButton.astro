@@ -1,0 +1,32 @@
+---
+import LogInIcon from "@/assets/icons/LogInIcon.astro"
+import LogOutIcon from "@/assets/icons/LogOutIcon.astro"
+import ProfileIcon from "@/assets/icons/ProfileIcon.astro"
+
+const {token, userData} = Astro.locals
+---
+
+<div class="w-fit font-semibold text-xs">
+    {token ?
+            <div class="flex space-x-2 items-center">
+                <a href="/u" title="My Page"
+                   class="p-2 flex items-center space-x-1 rounded-md hover:text-blue-200 hover:bg-blue-300/10">
+                    <ProfileIcon/>
+                    <span>{userData?.username}</span>
+                </a>
+
+                <form action="/auth/logout" method="GET" class="w-full flex flex-col justify-center items-center">
+                    <button type="submit" title="Log Out"
+                            class="p-2 flex justify-end rounded-md text-red-700 hover:text-red-900 hover:bg-red-300">
+                        <LogOutIcon/>
+                    </button>
+                </form>
+            </div>
+        :
+            <a href="/auth"
+               class="p-2 flex justify-end items-center space-x-1 rounded-md hover:text-blue-500 hover:bg-blue-300/10">
+                <span>Log In</span>
+                <LogInIcon/>
+            </a>
+    }
+</div>

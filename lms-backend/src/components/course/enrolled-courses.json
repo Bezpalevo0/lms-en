@@ -1,0 +1,36 @@
+{
+  "collectionName": "components_course_enrolled_courses",
+  "info": {
+    "displayName": "enrolledCourse",
+    "icon": "book",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "course": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::course.course"
+    },
+    "enrolledAt": {
+      "type": "datetime",
+      "required": true
+    },
+    "completedAt": {
+      "type": "datetime"
+    },
+    "progress_status": {
+      "type": "enumeration",
+      "enum": [
+        "in_progress",
+        "completed"
+      ],
+      "default": "in_progress"
+    },
+    "lessonsProgress": {
+      "type": "component",
+      "repeatable": true,
+      "component": "course.lesson-progress"
+    }
+  }
+}

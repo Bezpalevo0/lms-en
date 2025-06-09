@@ -1,0 +1,52 @@
+---
+import type {Lesson} from '@/interfaces'
+import PublicLayout from '@/layouts/PublicLayout.astro'
+import LessonDisplayRow from "@/components/LessonDisplayRow.astro"
+
+
+const {course, token} = Astro.locals
+---
+
+<PublicLayout>
+    <div class="container mx-auto flex flex-col gap-4 p-4">
+
+        <!-- Breadcrumbs -->
+        <nav class="text-sm text-gray-400">
+            <a href="/courses" class="hover:underline text-blue-400">Courses</a>
+            <span class="mx-2">/</span>
+            <span class="text-white">{course.title}</span>
+        </nav>
+
+        <!-- Title + Description -->
+        <h1 class="text-2xl font-bold">{course.title}</h1>
+        <p class="text-gray-400">{course.description}</p>
+
+        <!-- Lessons -->
+        <div class="mt-4 space-y-2">
+            {[...course.lessons]
+                .sort((a, b) => a.order - b.order)
+                .map((lesson: Lesson) => (
+                        <hr class="my-2 border-blue-300/10"/>
+                        <LessonDisplayRow course={course}
+                                          lesson={lesson}
+                                          isCourseInUserLibrary={false}
+                                          lessonProgressStatus={null}
+                        />
+                        <hr class="my-2 border-blue-300/10"/>
+                ))}
+        </div>
+
+        {token ?
+                <a href={`/u/courses/${course.slug}`} target="_blank" rel="noopener noreferrer"
+                   class="px-4 py-2 bg-blue-500 hover:bg-blue-600 w-fit rounded">
+                    View in dashboard
+                </a>
+            :
+                <a href={`/auth?r=/u/courses/${course.slug}`} target="_blank" rel="noopener noreferrer"
+                   class="px-4 py-2 bg-blue-500 hover:bg-blue-600 w-fit rounded">
+                    Log in to start the course
+                </a>
+        }
+    </div>
+</PublicLayout>
+

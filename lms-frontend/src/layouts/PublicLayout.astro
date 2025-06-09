@@ -1,0 +1,27 @@
+---
+import {SITE_TITLE_SUFFIX} from '@/consts'
+import BaseLayout from "@/layouts/BaseLayout.astro"
+import ProfileButton from '@/components/ui/ProfileButton.astro'
+
+
+const {title = null} = Astro.props
+---
+
+<BaseLayout title={title}>
+    <header class="container mx-auto p-4 flex justify-between items-center w-full">
+        <a href="/" class="sm:text-2xl font-black w-1/5">{SITE_TITLE_SUFFIX}</a>
+        <nav class="flex space-x-4 text-sm md:text-lg font-black">
+            <a href="/" class="hover:text-blue-500">Home</a>
+            <a href="/courses" class="hover:text-blue-500">Courses</a>
+        </nav>
+        <div class="w-1/5 flex justify-end">
+            <ProfileButton/>
+        </div>
+    </header>
+    <main class="flex flex-col">
+        <slot/>
+    </main>
+    <footer class="mt-auto mb-4 p-4 flex flex-col justify-center items-center w-full">
+        <a href="/">©2025 {SITE_TITLE_SUFFIX}</a>
+    </footer>
+</BaseLayout>

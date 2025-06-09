@@ -1,0 +1,13 @@
+---
+import UserLayout from "@/layouts/UserLayout.astro"
+import UserProgress from "@/components/UserProgress.astro"
+
+const {userProgress} = Astro.locals
+---
+
+<UserLayout>
+    <div class="flex flex-col p-4">
+        <h1 class="text-3xl font-semibold mb-3">Your Progress</h1>
+        <UserProgress progress={userProgress}/>
+    </div>
+</UserLayout>
